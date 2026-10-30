@@ -1039,7 +1039,7 @@ function renderOrderList(){
 }
 function renderOrderPanel(){
   var P=$('#oPanel');
-  if(orderDone){P.innerHTML='<div class="done"><span class="ok">✓</span><h2>Спасибо, '+esc(orderDone.name)+'!</h2><p class="note">Заказ № '+orderDone.no+' · '+rub(orderDone.total)+'<br>'+esc(orderDone.how)+'</p><p class="msg" style="text-align:left">'+(orderDone.sent?'Заказ передан в кафе. Администратор перезвонит, чтобы подтвердить его.':'Это демо-версия сайта: заказ пока не передаётся в кафе. После подключения приёма заказов администратор будет перезванивать в течение 10 минут.')+'</p><button class="btn btn-ink" type="button" id="newOrder">Новый заказ</button></div>';return}
+  if(orderDone){P.innerHTML='<div class="done"><span class="ok">✓</span><h2>Спасибо, '+esc(orderDone.name)+'!</h2><p class="note">Заказ № '+orderDone.no+' · '+rub(orderDone.total)+'<br>'+esc(orderDone.how)+'</p><p class="msg" style="text-align:left">'+(orderDone.sent?'Заказ передан в кафе. Администратор перезвонит, чтобы подтвердить его.':'Это демо-версия сайта: заказ не передаётся в кафе. Настоящий заказ, который сразу приходит администратору в Telegram, оформляется на сайте '+liveLink())+'</p><button class="btn btn-ink" type="button" id="newOrder">Новый заказ</button></div>';return}
   var keys=Object.keys(cart.items),t=totals(),del=cart.mode==='delivery';
   var prev={};$$('#oPanel input,#oPanel select,#oPanel textarea').forEach(function(f){prev[f.id]=f.value});
   var times=['Как можно скорее'],now=new Date();for(var h=10;h<=23;h++){if(h>now.getHours()+1)times.push(h+':00')}
@@ -1056,6 +1056,9 @@ function renderOrderPanel(){
 }
 /* Заявки уходят в кафе по адресу NOTIFY (на Cloudflare это /api/notify → _worker.js → Telegram). Пустой адрес — демо-режим, ничего не отправляется. */
 var NOTIFY=window.MAZZA_NOTIFY||'';
+/* Настоящий сайт для гостей; в демо-версии (claude.ai) после заказа показываем ссылку на него. */
+var LIVE_URL='https://abuzacariya1-cloud.github.io/mazza/';
+function liveLink(){return '<a href="'+LIVE_URL+'" target="_blank" rel="noopener" style="color:inherit;font-weight:600">'+LIVE_URL.replace(/^https:\/\//,'').replace(/\/$/,'')+'</a>.'}
 function notify(data,btn,errEl,done){
   if(!NOTIFY){done(false);return}
   var label=btn.textContent;btn.disabled=true;btn.textContent='Отправляем…';errEl.hidden=true;
@@ -1092,7 +1095,7 @@ function renderBooking(){
 }
 function renderBookSum(){
   var S=$('#bSum');
-  if(bookDone){S.innerHTML='<div class="done"><span class="ok">✓</span><h2>'+esc(bookDone.name)+', ждём вас!</h2><p style="color:rgba(255,255,255,.75)">'+esc(bookDone.text)+'</p><p class="msg" style="text-align:left">'+(bookDone.sent?'Заявка передана в кафе. Администратор позвонит, чтобы подтвердить бронь.':'Это демо-версия сайта: заявка пока не отправляется в кафе. После подключения администратор будет подтверждать бронь звонком.')+'</p><button class="btn btn-red" type="button" id="newBook">Новая бронь</button></div>';return}
+  if(bookDone){S.innerHTML='<div class="done"><span class="ok">✓</span><h2>'+esc(bookDone.name)+', ждём вас!</h2><p style="color:rgba(255,255,255,.75)">'+esc(bookDone.text)+'</p><p class="msg" style="text-align:left">'+(bookDone.sent?'Заявка передана в кафе. Администратор позвонит, чтобы подтвердить бронь.':'Это демо-версия сайта: заявка не передаётся в кафе. Настоящая бронь, которая сразу приходит администратору в Telegram, оформляется на сайте '+liveLink())+'</p><button class="btn btn-red" type="button" id="newBook">Новая бронь</button></div>';return}
   var prev={};$$('#bSum input,#bSum textarea').forEach(function(f){prev[f.id]=f.value});
   var d=fromIso(book.date);
   S.innerHTML='<h2>Ваша бронь</h2><dl><dt>Дата</dt><dd>'+d.getDate()+' '+MON[d.getMonth()]+', '+DOW[d.getDay()]+'</dd><dt>Время</dt><dd>'+(book.time||'<span style="color:#ff8fb1">выберите</span>')+'</dd><dt>Гостей</dt><dd>'+book.guests+'</dd><dt>Зал</dt><dd>'+esc(book.zone)+'</dd></dl>'+
